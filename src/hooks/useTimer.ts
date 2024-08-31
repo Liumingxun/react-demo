@@ -1,41 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 
-export const useTimer = (initSeconds: number = 10) => {
+export const useTimer = (initSeconds: number = 3) => {
   const [seconds, setSeconds] = useState(initSeconds);
-  const [isActive, setIsActive] = useState(false);
+  const intervalRef = useRef<number | null>()
 
-  useEffect(() => {
-    let timeout: number;
+  const handleStart = () => {
+    if (intervalRef.current) return
+    intervalRef.current = setInterval(() => {
+      setSeconds((s) => {
+        if (s > 0)
+          return s - 0.01
+        clearInterval(intervalRef.current!)
+        intervalRef.current = null
+        return 0
+      })
+    }, 10);
+  };
 
-    if (isActive) {
-      timeout = setTimeout(() => {
-        if (seconds > 0)
-          setSeconds((r) => r - 1);
-      }, 1000);
+  const handleReset = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
-
-    return () => clearTimeout(timeout); // Cleanup interval on unmount or when isActive changes
-  }, [isActive, seconds]);
-
-  const start = () => {
-    setIsActive(true);
-  };
-
-  const reset = () => {
     setSeconds(initSeconds);
-    setIsActive(false);
   };
 
-  const clear = () => {
+  const handleClear = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
     setSeconds(0);
-    setIsActive(false);
   };
 
   return {
     seconds,
-    isActive,
-    start,
-    reset,
-    clear,
+    handleStart,
+    handleReset,
+    handleClear,
   };
 };

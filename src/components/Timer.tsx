@@ -1,15 +1,15 @@
 import { useTimer } from "../hooks/useTimer";
 
 export const Timer = () => {
-  const { clear, seconds, reset, start } = useTimer();
+  const { seconds, ...handler } = useTimer();
   return (
     <>
       <div>
-        <button onClick={start}>start</button>
-        <button onClick={clear}>clear</button>
-        <button onClick={reset}>reset</button>
+        <button onClick={handler.handleStart}>start</button>
+        <button onClick={handler.handleClear}>clear</button>
+        <button onClick={handler.handleReset}>reset</button>
         <span>
-          remaining: {seconds} sec
+          remaining: {seconds.toFixed(2)} sec
         </span>
       </div>
     </>
